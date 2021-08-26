@@ -2,5 +2,5 @@
 
 lancer la commande :
 ```
-pip install git+git://gitlab.com/imageau/python-projects/emiapi.git@master
+pip install git+https://gitlab.com/imageau/python-projects/emiapi.git@master
 ```
