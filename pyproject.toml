@@ -16,3 +16,10 @@ pytest = "^5.2"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[virtualenvs]
+in-project = true
+[repositories]
+
+[repositories.my-gitlab]
+url = "https://gitlab.com/api/v4/projects/29154471/packages/pypi"
