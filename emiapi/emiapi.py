@@ -144,7 +144,7 @@ class EmiApi:
 
         """
         return copy.deepcopy(self)
-    def get_data(self,ids,Type):
+    def get_data(self,ids,Type,fro='',to=''):
         """
         Get the dataraw from one or multiple stations
 
@@ -154,6 +154,10 @@ class EmiApi:
             The id(s) of the station(s)
         Type : str
             'data' or 'dataraw'
+        fro : str
+            Date to start from (%Y-%m-%d)
+        to : str
+            Date to end (%Y-%m-%d)
 
         Returns
         -------
@@ -168,7 +172,7 @@ class EmiApi:
         out=[]
         for i in ids:
         #get date to inject in the request
-        
+            
             data_date = requests.get(self.url+'/app/data/onset?location_id='
                                      +i,verify=False,headers=self.headers)
             data_date=data_date.json()
@@ -176,16 +180,24 @@ class EmiApi:
                 print(f'No data for location {i}')
                 continue
             data_date=list(data_date.values())[:-1]
-            data_date=[datetime.strptime(x,'%Y-%m-%d') for x in data_date]     
-            start_index=min(data_date)
-            
-            dates=pd.date_range(start=start_index,end = datetime.today(), freq = '180d').to_pydatetime().tolist()
+            data_date=[datetime.strptime(x,'%Y-%m-%d') for x in data_date] 
+            if fro:
+                start_index=datetime.strptime(fro,'%Y-%m-%d')
+            else:
+                start_index=min(data_date)
+            if to:
+                end_index=datetime.strptime(to,'%Y-%m-%d')
+            else:
+                end_index=datetime.today()
+            dates=pd.date_range(start=start_index,end = end_index, freq = '180d',
+                                closed='left').to_pydatetime().tolist()
+            dates.append(end_index)
             df=pd.DataFrame()
             
-            for date in dates: #Slice request into multiple requests
+            for j in range(len(dates)-1): #Slice request into multiple requests
                 dfj=pd.DataFrame()
-                start=date
-                end= start + timedelta(days=180)
+                start=dates[j]
+                end= dates[j+1]
                 request_name =self.url+'/app/'+Type+'?location_id='+i+'&from='+(start.strftime('%Y-%m-%d')) +'&to='+(end.strftime('%Y-%m-%d'))
                 print(request_name)
                 data = requests.get(request_name,verify=False,headers=self.headers)
