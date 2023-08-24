@@ -23,7 +23,3 @@ build-backend = "poetry.core.masonry.api"
 
 [virtualenvs]
 in-project = true
-[repositories]
-
-[repositories.my-gitlab]
-url = "https://gitlab.com/api/v4/projects/29154471/packages/pypi"
